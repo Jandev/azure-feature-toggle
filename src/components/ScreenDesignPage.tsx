@@ -4,7 +4,7 @@ import { ArrowLeft, Maximize2, GripVertical, Layout, Smartphone, Tablet, Monitor
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { loadScreenDesignComponent, sectionUsesShell } from '@/lib/section-loader'
-import { loadAppShell, hasShellComponents, loadShellInfo } from '@/lib/shell-loader'
+import { loadAppShell, hasShellComponents } from '@/lib/shell-loader'
 import { loadProductData } from '@/lib/product-loader'
 import React from 'react'
 
@@ -249,39 +249,40 @@ export function ScreenDesignFullscreen() {
 
         // Create a wrapper that provides default props to the shell
         const ShellWrapper = ({ children }: { children?: React.ReactNode }) => {
-          // Try to get navigation items from shell spec
-          const shellInfo = loadShellInfo()
-          const specNavItems = shellInfo?.spec?.navigationItems || []
+          // Sample resources for demo
+          const sampleResources = [
+            {
+              id: 'res-001',
+              displayName: 'Development',
+              resourceName: 'myapp-dev',
+              environmentType: 'development' as const,
+            },
+            {
+              id: 'res-002',
+              displayName: 'Staging',
+              resourceName: 'myapp-staging',
+              environmentType: 'staging' as const,
+            },
+            {
+              id: 'res-003',
+              displayName: 'Production',
+              resourceName: 'myapp-prod',
+              environmentType: 'production' as const,
+            },
+          ]
 
-          // Parse navigation items from spec (format: "**Label** → Description")
-          const navigationItems = specNavItems.length > 0
-            ? specNavItems.map((item, index) => {
-                // Extract label from **Label** format
-                const labelMatch = item.match(/\*\*([^*]+)\*\*/)
-                const label = labelMatch ? labelMatch[1] : item.split('→')[0]?.trim() || `Item ${index + 1}`
-                return {
-                  label,
-                  href: `/${label.toLowerCase().replace(/\s+/g, '-')}`,
-                  isActive: index === 0,
-                }
-              })
-            : [
-                { label: 'Dashboard', href: '/', isActive: true },
-                { label: 'Items', href: '/items' },
-                { label: 'Settings', href: '/settings' },
-              ]
-
-          const defaultUser = {
-            name: 'Demo User',
-          }
-
-          // Pass props dynamically - the shell component decides what it needs
+          // Pass all required props for AppShell
           return (
             <ShellComponent
-              navigationItems={navigationItems}
-              user={defaultUser}
-              onNavigate={() => {}}
+              currentResource={sampleResources[0]}
+              resources={sampleResources}
+              onResourceChange={() => {}}
+              userName="Demo User"
+              userEmail="demo@example.com"
+              userRole="admin"
               onLogout={() => {}}
+              activeSection="dashboard"
+              onNavigate={() => {}}
             >
               {children}
             </ShellComponent>
